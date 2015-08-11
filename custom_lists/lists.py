@@ -47,12 +47,19 @@ class DynamicArray:
         B = self._make_array(c)  # new (bigger) array
         for k in range(self._n):  # for each existing value
             B[k] = self._A[k]
-            self._A = B  # use the bigger array
-            self._capacity = c
+        self._A = B  # use the bigger array
+        self._capacity = c
 
     def _make_array(self, c):  # nonpublic utility
         """Return new array with capacity c."""
         return (c * ctypes.py_object)()  # see ctypes documentation
+
+    def __str__(self):
+        output = ""
+        for i in range(0, self._n):
+            output += str(self._A[i]) + ", "
+
+        return output
 
 
 class SortedArray(DynamicArray):
@@ -63,8 +70,42 @@ class SortedArray(DynamicArray):
 
     def append(self, obj):
         """Overriding the append method to keep the array contents sorted"""
-        pass
 
-    def sorted_index(self, value):
-        """returns the index where the value would fit in"""
+        if self._n == self._capacity:  # not enough room
+            self._resize(2 * self._capacity)  # so double capacity
+
+        if self._n is 0:
+            self._A[0] = obj
+        else:
+            position_found = False
+            current_pos = self._n
+
+            while not position_found:
+                if current_pos > 0 and self._A[current_pos-1] > obj:
+                    self._A[current_pos] = self._A[current_pos-1]
+                    current_pos -= 1
+                else:
+                    position_found = True
+
+            self._A[current_pos] = obj
+
+        self._n += 1
+
+
+
+sorted_array = SortedArray()
+
+sorted_array.append(4)
+sorted_array.append(1)
+sorted_array.append(8)
+sorted_array.append(1)
+sorted_array.append(4)
+sorted_array.append(1)
+sorted_array.append(6)
+sorted_array.append(7)
+sorted_array.append(2)
+sorted_array.append(13)
+
+print(str(sorted_array))
+
 
