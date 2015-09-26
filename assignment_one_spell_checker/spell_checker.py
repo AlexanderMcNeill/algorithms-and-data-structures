@@ -58,7 +58,7 @@ class SpellChecker:
 
     def cache_mistake(self, input_string, corrections):
         """Method that caches the mistake"""
-        self.common_mistakes[input_string] = corrections
+        self.common_mistakes[input_string] = CachedMistake(corrections)
 
         #  When the common mistakes dict gets too big removing the least common mistake from the dict
         if len(self.common_mistakes) > self.CACHESIZE:
