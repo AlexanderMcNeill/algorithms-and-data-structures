@@ -1,14 +1,15 @@
 __author__ = 'alexmcneill'
-
+from collections import OrderedDict
 
 class SpellChecker:
     """Class that gives you spelling recommendations based on a given string"""
 
     WORDS_FILE = "words"
+    CACHESIZE = 50
 
     def __init__(self):
         self.words = self.create_words_set(self.WORDS_FILE)
-        self.common_mistakes = {}
+        self.common_mistakes = OrderedDict()
 
     def create_words_set(self, file_location):
         """Create words set from given file
@@ -56,8 +57,14 @@ class SpellChecker:
         return corrections
 
     def cache_mistake(self, input_string, corrections):
-        """Method that caches the mistake. Maybe used to retain order of the dict later"""
+        """Method that caches the mistake"""
         self.common_mistakes[input_string] = corrections
+
+        if len(self.common_mistakes) > self.CACHESIZE:
+            self.common_mistakes = OrderedDict(sorted(self.common_mistakes.items(), key=lambda t: t[1].count))
+            self.common_mistakes.popitem(True)
+            pass
+
 
     def is_possible_correction(self, incorrect_word, word):
         """Method that checks if the input word could be a correction for the input incorrect word
