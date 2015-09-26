@@ -38,4 +38,22 @@ class SpellChecker:
         pass
 
 
+class CashedMistake:
+    """Class that keeps track of the usage and corrections for a cashed mistake"""
+
+    def __init__(self, corrections):
+        self._corrections = corrections
+        self.count = 1
+
+    @property
+    def corrections(self):
+        """Method that gives access to the corrections set while recording how many times the correction has been
+        used"""
+        self.count += 1
+        return self._corrections
+
+    @corrections.setter
+    def corrections(self, value):
+        self._corrections = value
+
 test = SpellChecker()
