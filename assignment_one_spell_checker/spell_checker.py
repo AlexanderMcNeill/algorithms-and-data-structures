@@ -37,7 +37,7 @@ class SpellChecker:
             return self.common_mistakes[input_string].corrections
         else:
             corrections = self.recommend_correct_spelling(input_string)
-            self.cashe_mistake(input_string, corrections)
+            self.cache_mistake(input_string, corrections)
             return corrections
 
     def recommend_correct_spelling(self, input_string):
@@ -55,8 +55,8 @@ class SpellChecker:
 
         return corrections
 
-    def cashe_mistake(self, input_string, corrections):
-        """Method that cashes the mistake. Maybe used to retain order of the dict later"""
+    def cache_mistake(self, input_string, corrections):
+        """Method that caches the mistake. Maybe used to retain order of the dict later"""
         self.common_mistakes[input_string] = corrections
 
     def is_possible_correction(self, incorrect_word, word):
@@ -71,25 +71,28 @@ class SpellChecker:
         #  Returning true if any of the checks were correct
         return swapped_check_result or missing_check_result or incorrect_check_result or phonetic_check_result
 
-    def check_swapped_characters(self, incorrect_word, word):
+    @staticmethod
+    def check_swapped_characters(incorrect_word, word):
         """Method returns true if the incorrect string could be the word in a different order
         :rtype : bool
         """
         return len(incorrect_word) == len(word) and sorted(incorrect_word) in sorted(word)
 
-    def check_missing_character(self, incorrect_word, word):
+    @staticmethod
+    def check_missing_character(incorrect_word, word):
         """Method returns true if the incorrect word could be the word with a missing character
         :rtype : bool
         """
         if len(incorrect_word) == len(word) - 1:
             for c in incorrect_word:
-                if not incorrect_word.contains(c):
+                if c not in word:
                     return False
             return True
 
         return False
 
-    def check_incorrect_character(self, incorrect_word, word):
+    @staticmethod
+    def check_incorrect_character(incorrect_word, word):
         """Method returns true if the incorrect word could be the word with one incorrect character
         :rtype : bool
         """
@@ -98,22 +101,23 @@ class SpellChecker:
             incorrect_count = 0
 
             for c in incorrect_word:
-                if not incorrect_word.contains(c):
+                if c not in incorrect_word:
                     incorrect_count += 1
 
             return incorrect_count < 2
 
         return False
 
-    def check_phonetic_substitution(self, incorrect_word, word):
+    @staticmethod
+    def check_phonetic_substitution(incorrect_word, word):
         """Method returns true if the incorrect word could be the word with a incorrect phonetic substitution
         :rtype : bool
         """
         return False
 
 
-class CashedMistake:
-    """Class that keeps track of the usage and corrections for a cashed mistake"""
+class cachedMistake:
+    """Class that keeps track of the usage and corrections for a cached mistake"""
 
     def __init__(self, corrections):
         self._corrections = corrections
