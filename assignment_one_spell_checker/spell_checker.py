@@ -60,6 +60,7 @@ class SpellChecker:
         """Method that caches the mistake"""
         self.common_mistakes[input_string] = corrections
 
+        #  When the common mistakes dict gets too big removing the least common mistake from the dict
         if len(self.common_mistakes) > self.CACHESIZE:
             self.common_mistakes = OrderedDict(sorted(self.common_mistakes.items(), key=lambda t: t[1].count))
             self.common_mistakes.popitem(True)
