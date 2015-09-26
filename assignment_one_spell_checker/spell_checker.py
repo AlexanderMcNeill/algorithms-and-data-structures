@@ -17,11 +17,11 @@ class SpellChecker:
         words_file = open(file_location, 'r')
         words = set()
 
-        #  Reading through the first line of the file to start the reading
+        #  Reading through the first line of the file to start the read in loop
         current_word = words_file.readline()
 
         while current_word != "":
-            words.add(current_word.rstrip())
+            words.add(current_word.rstrip())  # Adding word that is stripped of spacing and new line characters
             current_word = words_file.readline()
 
         return words
@@ -29,7 +29,7 @@ class SpellChecker:
     def check(self, input_string):
         """Method performs a spell check on the input string with respect the words set and returns a list of possible
         corrections
-        :rtype : bool
+        :rtype : list
         """
         if input_string in self.words:
             return [input_string]
@@ -46,12 +46,12 @@ class SpellChecker:
         """
 
         # Creating a set to contain the possible corrections for the input string
-        corrections = set()
+        corrections = []
 
         # Checking each word to see if it is a possible correction to the input string
         for word in self.words:
             if self.is_possible_correction(input_string, word):
-                corrections.add(word)
+                corrections.append(word)
 
         return corrections
 
