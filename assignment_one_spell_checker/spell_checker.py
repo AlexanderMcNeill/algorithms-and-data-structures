@@ -93,6 +93,16 @@ class SpellChecker:
         """Method returns true if the incorrect word could be the word with one incorrect character
         :rtype : bool
         """
+
+        if len(incorrect_word) == len(word):
+            incorrect_count = 0
+
+            for c in incorrect_word:
+                if not incorrect_word.contains(c):
+                    incorrect_count += 1
+
+            return incorrect_count < 2
+
         return False
 
     def check_phonetic_substitution(self, incorrect_word, word):
