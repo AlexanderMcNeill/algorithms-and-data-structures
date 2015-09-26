@@ -76,7 +76,7 @@ class SpellChecker:
         """Method returns true if the incorrect string could be the word in a different order
         :rtype : bool
         """
-        return len(incorrect_word) == len(word) and sorted(incorrect_word) in sorted(word)
+        return len(incorrect_word) == len(word) and sorted(incorrect_word) == sorted(word)
 
     @staticmethod
     def check_missing_character(incorrect_word, word):
@@ -116,7 +116,7 @@ class SpellChecker:
         return False
 
 
-class cachedMistake:
+class CachedMistake:
     """Class that keeps track of the usage and corrections for a cached mistake"""
 
     def __init__(self, corrections):
