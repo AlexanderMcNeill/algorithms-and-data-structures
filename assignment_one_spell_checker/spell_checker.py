@@ -81,6 +81,12 @@ class SpellChecker:
         """Method returns true if the incorrect word could be the word with a missing character
         :rtype : bool
         """
+        if len(incorrect_word) == len(word) - 1:
+            for c in incorrect_word:
+                if not incorrect_word.contains(c):
+                    return False
+            return True
+
         return False
 
     def check_incorrect_character(self, incorrect_word, word):
