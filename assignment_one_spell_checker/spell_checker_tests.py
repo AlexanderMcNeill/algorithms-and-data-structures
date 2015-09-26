@@ -2,7 +2,7 @@ __author__ = 'alexmcneill'
 
 
 import unittest
-from spell_checker import SpellChecker, CashedMistake
+from spell_checker import SpellChecker, CachedMistake
 
 class TestSpellChecker(unittest.TestCase):
 
