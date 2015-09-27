@@ -30,10 +30,12 @@ class SpellChecker:
     def check(self, input_string):
         """Method performs a spell check on the input string with respect the words set and returns a list of possible
         corrections
-        :rtype : list
+        :rtype : set
         """
         if input_string in self.words:
-            return [input_string]
+            corrections_set = set()
+            corrections_set.add(input_string)
+            return corrections_set
         elif input_string in self.common_mistakes:
             return self.common_mistakes[input_string].corrections
         else:
@@ -47,12 +49,12 @@ class SpellChecker:
         """
 
         # Creating a set to contain the possible corrections for the input string
-        corrections = []
+        corrections = set()
 
         # Checking each word to see if it is a possible correction to the input string
         for word in self.words:
             if self.is_possible_correction(input_string, word):
-                corrections.append(word)
+                corrections.add(word)
 
         return corrections
 
