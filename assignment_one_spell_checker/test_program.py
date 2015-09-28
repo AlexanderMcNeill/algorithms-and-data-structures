@@ -9,7 +9,7 @@ def check_line(input_line, line_index):
         word = word.lower()
         corrections = spell_checker.check(word)
         if word not in corrections:
-            print("Incorrect word: {}, Possible corrections: {}, Line number: {}".format(word, corrections, line_index))
+            print("Incorrect word on line {}: {}, Possible corrections: {}".format(line_index, word, corrections))
 
 
 if __name__ == "__main__":
