@@ -22,7 +22,7 @@ class SpellChecker:
         current_word = words_file.readline()
 
         while current_word != "":
-            words.add(current_word.rstrip())  # Adding word that is stripped of spacing and new line characters
+            words.add(current_word.rstrip().lower())  # Adding word that is stripped of spacing and new line characters
             current_word = words_file.readline()
 
         return words
@@ -110,8 +110,8 @@ class SpellChecker:
         if len(incorrect_word) == len(word):
             incorrect_count = 0
 
-            for c in incorrect_word:
-                if c not in incorrect_word:
+            for i in range(0, len(incorrect_word)):
+                if incorrect_word[i] != word[i]:
                     incorrect_count += 1
 
             return incorrect_count < 2
