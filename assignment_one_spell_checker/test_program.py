@@ -8,8 +8,12 @@ def check_line(input_line, line_index):
     for word in words:
         word = word.lower()
         corrections = spell_checker.check(word)
-        if word not in corrections:
-            print("Incorrect word on line {}: {}, Possible corrections: {}".format(line_index, word, corrections))
+        if corrections is not None:
+            if word not in corrections:
+                print("Incorrect word on line {}: {}, Possible corrections: {}".format(line_index, word, corrections))
+
+        else:
+            print("Incorrect word on line {}: {}, Possible corrections: {}".format(line_index, word, "None found"))
 
 
 if __name__ == "__main__":

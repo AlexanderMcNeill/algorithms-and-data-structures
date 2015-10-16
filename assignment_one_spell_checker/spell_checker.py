@@ -1,31 +1,58 @@
 __author__ = 'alexmcneill'
 from collections import OrderedDict
+import string
+
 
 class SpellChecker:
     """Class that gives you spelling recommendations based on a given string"""
 
-    WORDS_FILE = "words"
-    CACHESIZE = 50
+    WORDS_FILE = "words.txt"
+    CACHESIZE = 200
 
     def __init__(self):
         self.words = self.create_words_set(self.WORDS_FILE)
         self.common_mistakes = OrderedDict()
+        self.orderedWords = self.create_ordered_words_dict(self.words)
 
     def create_words_set(self, file_location):
         """Create words set from given file
         :rtype : set
         """
         words_file = open(file_location, 'r')
-        words = set()
 
-        #  Reading through the first line of the file to start the read in loop
-        current_word = words_file.readline()
+        return set([line.rstrip().lower() for line in words_file])
 
-        while current_word != "":
-            words.add(current_word.rstrip().lower())  # Adding word that is stripped of spacing and new line characters
-            current_word = words_file.readline()
+    def create_ordered_words_dict(self, words):
+        """Create dict that has a int key that points to a set of words of that length
+        :rtype : dict
+        """
 
-        return words
+        ordered_words = {}
+
+        for word in words:
+            key = len(word)
+            if key not in ordered_words:
+                ordered_words[key] = set()
+
+            ordered_words[key].add(word)
+
+        return ordered_words
+
+    def cache_mistake(self, input_string, corrections):
+        """Method that caches the mistake"""
+        self.common_mistakes[input_string] = CachedMistake(corrections)
+
+        #  When the common mistakes dict gets too big removing the least common mistake from the dict
+        if len(self.common_mistakes) > self.CACHESIZE:
+            least_common_key = None
+
+            for key, item in self.common_mistakes:
+                if least_common_key is None or item.count < self.common_mistakes[least_common_key].count:
+                    least_common_key = key
+
+            self.common_mistakes.pop(least_common_key)
+
+
 
     def check(self, input_string):
         """Method performs a spell check on the input string with respect the words set and returns a list of possible
@@ -39,91 +66,95 @@ class SpellChecker:
         elif input_string in self.common_mistakes:
             return self.common_mistakes[input_string].corrections
         else:
-            corrections = self.recommend_correct_spelling(input_string)
+            corrections = self.swapped_characters(input_string) | self.missing_character(input_string) | self.inserted_character(input_string) | self.incorrect_character(input_string)
             self.cache_mistake(input_string, corrections)
             return corrections
 
-    def recommend_correct_spelling(self, input_string):
-        """Recommend all possible corrections to the input string that are in the words set
-        :rtype : set
-        """
-
-        # Creating a set to contain the possible corrections for the input string
-        corrections = set()
-
-        # Checking each word to see if it is a possible correction to the input string
-        for word in self.words:
-            if self.is_possible_correction(input_string, word):
-                corrections.add(word)
-
-        return corrections
-
-    def cache_mistake(self, input_string, corrections):
-        """Method that caches the mistake"""
-        self.common_mistakes[input_string] = CachedMistake(corrections)
-
-        #  When the common mistakes dict gets too big removing the least common mistake from the dict
-        if len(self.common_mistakes) > self.CACHESIZE:
-            self.common_mistakes = OrderedDict(sorted(self.common_mistakes.items(), key=lambda t: t[1].count))
-            self.common_mistakes.popitem(True)
-            pass
-
-
-    def is_possible_correction(self, incorrect_word, word):
-        """Method that checks if the input word could be a correction for the input incorrect word
-        :rtype : bool
-        """
-        swapped_check_result = self.check_swapped_characters(incorrect_word, word)
-        missing_check_result = self.check_missing_character(incorrect_word, word)
-        incorrect_check_result = self.check_incorrect_character(incorrect_word, word)
-        phonetic_check_result = self.check_phonetic_substitution(incorrect_word, word)
-
-        #  Returning true if any of the checks were correct
-        return swapped_check_result or missing_check_result or incorrect_check_result or phonetic_check_result
-
-    @staticmethod
-    def check_swapped_characters(incorrect_word, word):
+    def swapped_characters(self, incorrect_word):
         """Method returns true if the incorrect string could be the word in a different order
-        :rtype : bool
+        :rtype : list
         """
-        return len(incorrect_word) == len(word) and sorted(incorrect_word) == sorted(word)
+
+        if len(incorrect_word) in self.orderedWords:
+            possible_words = self.orderedWords[len(incorrect_word)]
+            return possible_words.intersection(self.create_swapped_characters_set(incorrect_word))
+
+        return set()
 
     @staticmethod
-    def check_missing_character(incorrect_word, word):
+    def create_swapped_characters_set(incorrect_word):
+        s = set()
+
+        for i in range(0, len(incorrect_word)-1):
+            temp_word = ""
+            temp_word += incorrect_word[:i]
+            temp_word += incorrect_word[i+1]
+            temp_word += incorrect_word[i]
+            temp_word += incorrect_word[i+2:]
+            s.add(temp_word)
+
+        return s
+
+    def inserted_character(self, incorrect_word):
+
+        if len(incorrect_word) in self.orderedWords:
+            possible_words = self.orderedWords[len(incorrect_word)+1]
+            return possible_words.intersection(self.create_inserted_character_set(incorrect_word))
+
+        return set()
+
+    @staticmethod
+    def create_inserted_character_set(incorrect_word):
+        s = set()
+        for i in range(0, len(incorrect_word)+1):
+            for c in string.ascii_lowercase+"'":
+                s.add(incorrect_word[:i] + c + incorrect_word[i:])
+
+        return s
+
+    def missing_character(self, incorrect_word):
         """Method returns true if the incorrect word could be the word with a missing character
-        :rtype : bool
+        :rtype : list
         """
-        if len(incorrect_word) == len(word) - 1:
-            for c in incorrect_word:
-                if c not in word:
-                    return False
-            return True
 
-        return False
+        if len(incorrect_word) in self.orderedWords:
+            possible_words = self.orderedWords[len(incorrect_word) - 1]
+
+            return possible_words.intersection(self.create_missing_character_set(incorrect_word))
+
+        return set()
 
     @staticmethod
-    def check_incorrect_character(incorrect_word, word):
+    def create_missing_character_set(incorrect_word):
+
+        s = set()
+
+        for i in range(0, len(incorrect_word)):
+            s.add(incorrect_word[:i] + incorrect_word[i+1:])
+
+        return s
+
+    def incorrect_character(self, incorrect_word):
         """Method returns true if the incorrect word could be the word with one incorrect character
-        :rtype : bool
+        :rtype : list
         """
 
-        if len(incorrect_word) == len(word):
-            incorrect_count = 0
+        if len(incorrect_word) in self.orderedWords:
+            possible_words = self.orderedWords[len(incorrect_word)]
+            return set(filter(lambda x: self.check_incorrect_character(incorrect_word, x), possible_words))
 
-            for i in range(0, len(incorrect_word)):
-                if incorrect_word[i] != word[i]:
-                    incorrect_count += 1
+        return set()
 
-            return incorrect_count < 2
-
-        return False
 
     @staticmethod
-    def check_phonetic_substitution(incorrect_word, word):
-        """Method returns true if the incorrect word could be the word with a incorrect phonetic substitution
-        :rtype : bool
-        """
-        return False
+    def check_incorrect_character(incorrect_word, possible_word):
+        incorrect_count = 0
+
+        for i in range(0, len(incorrect_word)):
+            if incorrect_word[i] != possible_word[i]:
+                incorrect_count += 1
+
+        return incorrect_count < 2
 
 
 class CachedMistake:
@@ -143,5 +174,3 @@ class CachedMistake:
     @corrections.setter
     def corrections(self, value):
         self._corrections = value
-
-test = SpellChecker()
