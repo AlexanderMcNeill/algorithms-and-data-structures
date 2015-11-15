@@ -53,3 +53,26 @@ class ReversibleLinkedList:
 
         self._tail = new_node
         self._size += 1
+
+    def __str__(self):
+        output = []
+
+        current_node = self._head
+
+        while current_node is not None:
+            output.append(current_node.data)
+            current_node = current_node.next
+
+        return str(output)
+
+
+linked_list = ReversibleLinkedList()
+
+for i in range(0, 100):
+    linked_list.enqueue(i)
+
+print(linked_list)
+
+linked_list.reverse_list()
+
+print(linked_list)
