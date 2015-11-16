@@ -20,16 +20,20 @@ class WordNode:
         return self.right_child
 
     def is_left_child(self):
-        return self.parent and self is self.parent.left_child  # Checking if the node has a parent and if the nod is its parent's left child
+        # Checking if the node has a parent and if the nod is its parent's left child
+        return self.parent and self is self.parent.left_child
 
     def is_right_child(self):
-        return self.parent and self is self.parent.right_child # Checking if the node has a parent and if the nod is its parent's right child
+        # Checking if the node has a parent and if the nod is its parent's right child
+        return self.parent and self is self.parent.right_child
 
     def is_root(self):
-        return self.parent is None  # Checking that the node doesnt have a parent
+        # Checking that the node doesnt have a parent
+        return self.parent is None
 
     def is_leaf(self):
-        return not (self.left_child or self.right_child)  # Checking that the node doesnt have a left or a right child
+        # Checking that the node doesnt have a left or a right child
+        return not (self.left_child or self.right_child)
 
 
 class WordTree:
@@ -88,12 +92,12 @@ class WordTree:
 
     def _create_ordered_list(self, current_node):
         if current_node.is_leaf():
-            return [{"word": current_node.key, "positions": current_node.value}]
+            return [{current_node.key: current_node.value}]
         else:
             output = []
             if current_node.has_left_child():
                 output += self._create_ordered_list(current_node.left_child)
-            output += [{"word": current_node.key, "positions": current_node.value}]
+            output += [{current_node.key: current_node.value}]
             if current_node.has_right_child():
                 output += self._create_ordered_list(current_node.right_child)
             return output
@@ -119,7 +123,7 @@ class WordTree:
 
 if __name__ == '__main__':
 
-    d = ["this", "this", "is", "a", "ab", "test"]
+    d = ["this", "this", "is", "a", "a", "test"]
     t = WordTree()
 
     for i in range(0, len(d)):
