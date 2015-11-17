@@ -1,20 +1,29 @@
 __author__ = 'alexmcneill'
 
-START = 1
-END = 100
+
 FIZZ_NUM = 3
 BUZZ_NUM = 5
 
-for i in range(START, END+1):
-    fizz = i % FIZZ_NUM
-    buzz = i % BUZZ_NUM
+
+def check_fizz(input_num):
+    return input_num % FIZZ_NUM == 0
+
+
+def check_buzz(input_num):
+    return input_num % BUZZ_NUM == 0
+
+
+def get_fizz_buzz(input_num):
     output = ""
-    if fizz == 0 or buzz == 0:
-        if fizz == 0:
+    if check_fizz(input_num) or check_buzz(input_num):
+        if check_fizz(input_num):
             output += "Fizz"
-        if buzz == 0:
+        if check_buzz(input_num):
             output += "Buzz"
     else:
-        output += str(i)
+        output += str(input_num)
+    return output
 
-    print(output)
+if __name__ == "__main__":
+    for i in range(1, 100):
+        print(get_fizz_buzz(i))

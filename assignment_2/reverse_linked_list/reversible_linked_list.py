@@ -1,22 +1,60 @@
 __author__ = 'alexmcneill'
 
 
-class Node:
-
-    def __init__(self, data, next_element):
-        self.data = data
-        self.next = next_element
-
-
 class ReversibleLinkedList:
 
+    class _Node:
+
+        def __init__(self, data, next_element):
+            self.data = data
+            self.next = next_element
+
     def __init__(self):
-        self._head = Node(None, None)
-        self._tail = Node(None, None)
+        # Setting up setting up variables to keep track of the head and tail
+        self._head = None
+        self._tail = None
+
+        # Setting up variable to keep track of the size
         self._size = 0
 
     def __len__(self):
         return self._size
+
+    def is_empty(self):
+        return self._size == 0
+
+    def first(self):
+        if self.is_empty():
+            raise IndexError
+        return self._head.data
+
+    def enqueue(self, data):
+        new_node = self._Node(data, None)
+
+        if self.is_empty():
+            self._head = new_node
+        else:
+            self._tail.next = new_node
+
+        self._tail = new_node
+        self._size += 1
+
+    def dequeue(self):
+        # Raising error if you try to dequeue with a empty list
+        if self.is_empty():
+            raise IndexError
+
+        # Getting the data from the head and updating the head with its next
+        output = self._head.data
+        self._head = self._head.next
+
+        # Updating the size
+        self._size -= 1
+
+        if self.is_empty():
+            self._tail = None
+
+        return output
 
     def reverse_list(self):
         # Setting where to start reversing
@@ -40,20 +78,6 @@ class ReversibleLinkedList:
         self._head = self._tail
         self._tail = temp_node
 
-    def is_empty(self):
-        return self._size == 0
-
-    def enqueue(self, data):
-        new_node = Node(data, None)
-
-        if self.is_empty():
-            self._head = new_node
-        else:
-            self._tail.next = new_node
-
-        self._tail = new_node
-        self._size += 1
-
     def __str__(self):
         output = []
 
@@ -66,13 +90,14 @@ class ReversibleLinkedList:
         return str(output)
 
 
-linked_list = ReversibleLinkedList()
+if __name__ == "__main__":
+    linked_list = ReversibleLinkedList()
 
-for i in range(0, 100):
-    linked_list.enqueue(i)
+    for i in range(0, 100):
+        linked_list.enqueue(i)
 
-print(linked_list)
+    print(linked_list)
 
-linked_list.reverse_list()
+    linked_list.reverse_list()
 
-print(linked_list)
+    print(linked_list)

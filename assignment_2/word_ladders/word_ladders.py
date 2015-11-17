@@ -32,6 +32,7 @@ class WordLadder():
 
         # Getting a copy of the dict for this ladder
         words = copy.deepcopy(self.dict)
+        words.remove(first_word)
 
         # Creating queue with the the root node in it
         queue = Queue.Queue()
@@ -72,6 +73,12 @@ class WordLadder():
 
         return output
 
+    def check_progress(self, current_word, goal):
+        word_one = set(current_word)
+        word_two = set(goal)
+        intersect = word_one.intersection(word_two)
+        return len(intersect)
+
     @staticmethod
     def create_node(word, parent, children):
         return {"word": word, "parent": parent, "children": children}
@@ -100,7 +107,7 @@ class WordLadder():
             current_node = current_node["parent"]
 
         # Returning a readable string
-        return "<-".join(path_list)
+        return "->".join(path_list)
 
 if __name__ == "__main__":
     word_ladder = WordLadder()
